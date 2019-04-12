@@ -30,7 +30,7 @@ class StudentAgent(RandomAgent):
 
         bestMove = moves[vals.index( max(vals) )]
         print(bestMove)
-        
+
         return bestMove
 
     def dfMiniMax(self, board, depth):
@@ -76,13 +76,21 @@ class StudentAgent(RandomAgent):
         # Check if draw
         if board.terminal():
             return 0
+        
+        """
+        We check for each winning position in the horizontal, vertical and diagonal
+        positions. A winning move gives a weight of 10, two in a row gives a score
+        of 3 and a defensive move gives a score of -5
+        """
+        # Initialise score
+        score = 0
 
         # Check row 4 piece position
-        # Check for each winning position
-        score = 0
         for row in range(board.height):
             for col in range(board.width - (board.num_to_connect - 1)) :
+                # Return a list of winning position for each row
                 checkRow = board.board[row][col:col + board.num_to_connect]
+                # Add score
                 if checkRow.count(self.id) == 3 and checkRow.count(0) == 1:
                     score += 10
                 elif checkRow.count(self.id) == 2 and checkRow.count(0) == 2:
@@ -90,9 +98,19 @@ class StudentAgent(RandomAgent):
                 elif checkRow.count(self.id % 2 + 1) == 3 and checkRow.count(0) == 1:
                     score -= 5  
 
+        # Check column 4 piece position
+        for row in range(board.width):
+            for col in range(board.height - (board.num_to_connect - 1)) :
+                checkRow = [board.board[i][row] for i in range(col,col + board.num_to_connect)]
+                if checkRow.count(self.id) == 3 and checkRow.count(0) == 1:
+                    score += 10
+                elif checkRow.count(self.id) == 2 and checkRow.count(0) == 2:
+                    score += 3
+                elif checkRow.count(self.id % 2 + 1) == 3 and checkRow.count(0) == 1:
+                    score -= 5  
 
         return score
-        # Check column 4 piece position
+        #return random.uniform(0, 1)
        
         """
         Your evaluation function should look at the current state and return a score for it. 
@@ -125,6 +143,4 @@ class StudentAgent(RandomAgent):
             next_state(turn)
             winner()
         """
-				
-        # return random.uniform(0, 1)
 
