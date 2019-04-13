@@ -6,7 +6,6 @@ class StudentAgent(RandomAgent):
     def __init__(self, name):
         super().__init__(name)
         self.MaxDepth = 2
-        # self.NextState = None
 
 
     def get_move(self, board):
@@ -18,7 +17,6 @@ class StudentAgent(RandomAgent):
             A tuple of two integers, (row, col)
         """
 
-        # self.NextState = copy.deepcopy(board)
         valid_moves = board.valid_moves()
         vals = []
         moves = []
@@ -64,19 +62,30 @@ class StudentAgent(RandomAgent):
         return bestVal
     
     def score(self, array, board):
-        return 0
+        score = 0
+        player = self.id
+        opponent = self.id % 2 + 1
+
+        if array.count(player) == 3 and array.count(0) == 1:
+            score += 100
+        elif array.count(player) == 2 and array.count(0) == 2:
+            score += 3
+        elif array.count(opponent) == 3 and array.count(0) == 1:
+            score -= 5 
+
+        return score
     
     def evaluateBoardState(self, board):        
         # Check if winning piece/move
         if board.winner() == self.id:
-            return 1
+            return 1000000000
         elif board.winner() == self.id % 2 + 1:
-            return -1
+            return -1000000000
 
         # Check if draw
         if board.terminal():
             return 0
-        
+
         """
         We check for each winning position in the horizontal, vertical and diagonal
         positions. A winning move gives a weight of 10, two in a row gives a score
@@ -84,33 +93,34 @@ class StudentAgent(RandomAgent):
         """
         # Initialise score
         score = 0
-
+       
         # Check row 4 piece position
         for row in range(board.height):
             for col in range(board.width - (board.num_to_connect - 1)) :
                 # Return a list of winning position for each row
-                checkRow = board.board[row][col:col + board.num_to_connect]
+                check = board.board[row][col:col + board.num_to_connect]
                 # Add score
-                if checkRow.count(self.id) == 3 and checkRow.count(0) == 1:
-                    score += 10
-                elif checkRow.count(self.id) == 2 and checkRow.count(0) == 2:
-                    score += 3
-                elif checkRow.count(self.id % 2 + 1) == 3 and checkRow.count(0) == 1:
-                    score -= 5  
+                score += self.score(check, board)
 
         # Check column 4 piece position
         for row in range(board.width):
             for col in range(board.height - (board.num_to_connect - 1)) :
-                checkRow = [board.board[i][row] for i in range(col,col + board.num_to_connect)]
-                if checkRow.count(self.id) == 3 and checkRow.count(0) == 1:
-                    score += 10
-                elif checkRow.count(self.id) == 2 and checkRow.count(0) == 2:
-                    score += 3
-                elif checkRow.count(self.id % 2 + 1) == 3 and checkRow.count(0) == 1:
-                    score -= 5  
-
+                check = [board.board[i][row] for i in range(col,col + board.num_to_connect)]
+                score += self.score(check, board)
+        
+        # Check diagonal positions  
+        for row in range(board.width - (board.num_to_connect - 1)):
+            for col in range(board.height - (board.num_to_connect - 1)) :
+                check = [board.board[col+i][row+i] for i in range(board.num_to_connect)]
+                score += self.score(check, board)
+        
+        # Check for the other diagonal direction
+        for row in range(board.width - (board.num_to_connect - 1)):
+            for col in range(board.height - (board.num_to_connect - 1)) :
+                check = [board.board[col+(board.num_to_connect-1) - i][row+i] for i in range(board.num_to_connect)]
+                score += self.score(check, board)
+        
         return score
-        #return random.uniform(0, 1)
        
         """
         Your evaluation function should look at the current state and return a score for it. 
