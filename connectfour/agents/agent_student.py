@@ -69,9 +69,9 @@ class StudentAgent(RandomAgent):
         if array.count(player) == 3 and array.count(0) == 1:
             score += 100
         elif array.count(player) == 2 and array.count(0) == 2:
-            score += 3
+            score += 30
         elif array.count(opponent) == 3 and array.count(0) == 1:
-            score -= 5 
+            score -= 50 
 
         return score
     
@@ -79,8 +79,6 @@ class StudentAgent(RandomAgent):
         # Check if winning piece/move
         if board.winner() == self.id:
             return 1000000000
-        elif board.winner() == self.id % 2 + 1:
-            return -1000000000
 
         # Check if draw
         if board.terminal():
@@ -88,12 +86,13 @@ class StudentAgent(RandomAgent):
 
         """
         We check for each winning position in the horizontal, vertical and diagonal
-        positions. A winning move gives a weight of 10, two in a row gives a score
-        of 3 and a defensive move gives a score of -5
+        positions. A 3 in a row move gives a weight of 100, two in a row gives a score
+        of 30 and a defensive move gives a score of -50. Center positions are also 
+        weighted higher since they allow a win even when both parties play perfectly.
         """
         # Initialise score
         score = 0
-       
+        
         # Check row 4 piece position
         for row in range(board.height):
             for col in range(board.width - (board.num_to_connect - 1)) :
@@ -119,6 +118,10 @@ class StudentAgent(RandomAgent):
             for col in range(board.height - (board.num_to_connect - 1)) :
                 check = [board.board[col+(board.num_to_connect-1) - i][row+i] for i in range(board.num_to_connect)]
                 score += self.score(check, board)
+
+        # Give higher weight to center positions
+        center = [board.board[i][(board.width//2)] for i in range(board.height)]
+        score += center.count(self.id) * 5
         
         return score
        
