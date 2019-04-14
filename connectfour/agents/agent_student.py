@@ -1,6 +1,4 @@
 from connectfour.agents.computer_player import RandomAgent
-import random
-import copy
 
 class StudentAgent(RandomAgent):
     def __init__(self, name):
@@ -61,7 +59,7 @@ class StudentAgent(RandomAgent):
 
         return bestVal
     
-    def score(self, array, board):
+    def score(self, array):
         score = 0
         player = self.id
         opponent = self.id % 2 + 1
@@ -99,25 +97,25 @@ class StudentAgent(RandomAgent):
                 # Return a list of winning position for each row
                 check = board.board[row][col:col + board.num_to_connect]
                 # Add score
-                score += self.score(check, board)
+                score += self.score(check)
 
         # Check column 4 piece position
         for row in range(board.width):
             for col in range(board.height - (board.num_to_connect - 1)) :
                 check = [board.board[i][row] for i in range(col,col + board.num_to_connect)]
-                score += self.score(check, board)
+                score += self.score(check)
         
         # Check diagonal positions  
         for row in range(board.width - (board.num_to_connect - 1)):
             for col in range(board.height - (board.num_to_connect - 1)) :
                 check = [board.board[col+i][row+i] for i in range(board.num_to_connect)]
-                score += self.score(check, board)
+                score += self.score(check)
         
         # Check for the other diagonal direction
         for row in range(board.width - (board.num_to_connect - 1)):
             for col in range(board.height - (board.num_to_connect - 1)) :
                 check = [board.board[col+(board.num_to_connect-1) - i][row+i] for i in range(board.num_to_connect)]
-                score += self.score(check, board)
+                score += self.score(check)
 
         # Give higher weight to center positions
         center = [board.board[i][(board.width//2)] for i in range(board.height)]
