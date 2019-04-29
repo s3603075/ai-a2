@@ -24,10 +24,9 @@ class StudentAgent(RandomAgent):
         for move in valid_moves:
             next_state = board.next_state(self.id, move[1])
             moves.append( move )
-            vals.append( self.dfMiniMax(next_state, -1000000000, 1000000000, 1) )
+            vals.append( self.dfMiniMax(next_state, self.min, self.max, 1) )
 
         bestMove = moves[vals.index( max(vals) )]
-        # print(vals)
 
         return bestMove
 
