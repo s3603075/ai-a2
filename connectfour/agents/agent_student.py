@@ -3,7 +3,9 @@ from connectfour.agents.computer_player import RandomAgent
 class StudentAgent(RandomAgent):
     def __init__(self, name):
         super().__init__(name)
-        self.MaxDepth = 2
+        self.MaxDepth = 3
+        self.min = -10000000000
+        self.max = 10000000000
 
 
     def get_move(self, board):
@@ -22,40 +24,38 @@ class StudentAgent(RandomAgent):
         for move in valid_moves:
             next_state = board.next_state(self.id, move[1])
             moves.append( move )
-            vals.append( self.dfMiniMax(next_state, 1) )
+            vals.append( self.dfMiniMax(next_state, -1000000000, 1000000000, 1) )
 
         bestMove = moves[vals.index( max(vals) )]
-        print(bestMove)
+        # print(vals)
 
         return bestMove
 
-    def dfMiniMax(self, board, depth):
+    def dfMiniMax(self, board, alpha, beta, depth):
         # Goal return column with maximized scores of all possible next states
         
         if depth == self.MaxDepth:
             return self.evaluateBoardState(board)
 
         valid_moves = board.valid_moves()
-        vals = []
-        moves = []
 
         for move in valid_moves:
             if depth % 2 == 1:
+                bestVal = self.max
                 next_state = board.next_state(self.id % 2 + 1, move[1])
+                score = self.dfMiniMax(next_state, alpha, beta, depth + 1)
+                bestVal = min(bestVal, score)
+                beta = min(beta, bestVal)
+                if beta <= alpha:
+                    break
             else:
+                bestVal = self.min
                 next_state = board.next_state(self.id, move[1])
-                
-            moves.append( move )
-            vals.append( self.dfMiniMax(next_state, depth + 1) )
-            #max(vals)
-            #alpha = max(alpha,value)
-            #if alpha > beta: break
-
-        
-        if depth % 2 == 1:
-            bestVal = min(vals)
-        else:
-            bestVal = max(vals)
+                score = self.dfMiniMax(next_state, alpha, beta, depth + 1)
+                bestVal = max(bestVal, score)
+                alpha = max(alpha, bestVal)
+                if beta <= alpha:
+                    break
 
         return bestVal
     
