@@ -3,7 +3,7 @@ from connectfour.agents.computer_player import RandomAgent
 class StudentAgent(RandomAgent):
     def __init__(self, name):
         super().__init__(name)
-        self.MaxDepth = 3
+        self.MaxDepth = 2
         self.min = -10000000000
         self.max = 10000000000
 
